@@ -1,0 +1,23 @@
+services:
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: a!]2e4VrqzFUPf0]
+      MYSQL_DATABASE: docker_database
+      MYSQL_USER: docker_user
+      MYSQL_PASSWORD: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysqldb
+      volumes:
+        -mysql_data:/var/lib/mysql
+    networks:
+      - internalnet
+networks:
+  internalnet:
+    driver: bridge
+volumes:
+  mysql_data:
