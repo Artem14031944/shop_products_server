@@ -16,6 +16,9 @@ import {
 import dotenv from "dotenv";
 import router from "./routes/index.js";
 import errorHandler from "./middleware/ErrorHandlingMiddleware.js";
+import fileUpload from "express-fileupload";
+import { resolve } from "path";
+import { __dirname } from "./helper/path.js";
 
 dotenv.config();
 const app = express();
@@ -23,6 +26,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload({}));
+app.use(express.static(resolve(__dirname, 'static')));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use("/api", router);

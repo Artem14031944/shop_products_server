@@ -1,28 +1,58 @@
-import { Brand } from '../models/models.js'
+import { Brand } from "../models/models.js";
+import { validationResult } from "express-validator";
+import BrandService from "../services/brandService.js";
+import ApiError from "../err/ApiError.js";
 
-const messageUpdateSuccess = 'Бранд успешно изменен';
-const messageDeleteSuccess = 'Бранд успешно удален';
+
+const messageDeleteSuccess = 'Бренд удален';
 
 class BrandController {
-    async create(req, res) {
-        const brand = req.body;
-        const newBrand = await Brand.create(brand);
-
-        return json(newBrand);
+    async create(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors.array().map(err => err.msg).join('\n')));
+            }
+    
+            const brand = req.body;
+            const newBrand = await BrandService.create(brand);
+    
+            return res.json(newBrand);
+        } catch(err) {
+            next(err);
+        }
     }
 
-    async update(req, res) {
-        const brand = req.body;
-        await Brand.update(brand, { where: { id : brand.id }});
-
-        return res.json({ message: messageUpdateSuccess });
+    async update(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors.array().map(err => err.msg).join('\n')));
+            }
+    
+            const brand = req.body;
+            const message = await BrandService.update(brand);
+    
+            return res.json(message);
+        } catch(err) {
+            next(err);
+        }
     }
 
-    async getOne(req, res) {
-        const { id } = req.body;
-        const brand = await Brand.findAll({ where: { id } });
-
-        return res.json(brand);
+    async getOne(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors.array().map(err => err.msg).join('\n')));
+            }
+    
+            const { id } = req.body;
+            const brand = await BrandService.getOne(id);
+    
+            return res.json(brand);
+        } catch(err) {
+            next(err);
+        }
     }
 
     async getAll(req, res) {
@@ -31,10 +61,20 @@ class BrandController {
         return res.json(allBrans);
     }
 
-    async delete(req, res) {
-        await Brand.destroy({ where: { id } });
-
-        return res.json({ message: messageDeleteSuccess });
+    async delete(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors.array().map(err => err.msg).join('\n')));
+            }
+            
+            const { id } = req.query;
+            const message = await BrandService.delete(id);
+    
+            return res.json(message);
+        } catch(err) {
+            next(err);
+        } 
     }
 }
 
