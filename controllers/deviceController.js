@@ -1,5 +1,5 @@
 import { Device, DeviceInfo } from '../models/models.js';
-import { __dirname } from '../helper/path.js'
+import { __dirname } from '../helpers/path.js'
 import { v4 } from 'uuid';
 import { resolve } from 'path';
 import ApiError from '../err/ApiError.js';

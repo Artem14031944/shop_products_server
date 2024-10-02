@@ -1,35 +1,57 @@
-import { Type } from '../models/models.js';
-import ApiError from '../err/ApiError.js';
-
-const MessageUpdateSuccess = 'Тип успешно изменен';
-const MessageDeleteSuccess = 'Тип успешно удален';
+import TypeService from "../services/typeService.js";
+import { Type } from "../models/models.js";
+import { listMessagesSusses } from "../helpers/listMessages.js";
+import { validationResult } from "express-validator";
+import ApiError from "../err/ApiError.js";
 
 class TypeController {
-    async create(req, res) {
-        const { name } = req.body;
-        const type = await Type.create({ name });
+    async create(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors.array().map(err => err.msg).join('\n')));
+            }
 
-        return res.json(type);
+            const { name } = req.body;
+            const type = await TypeService.create(name);
+    
+            return res.json(type);
+        } catch(err) {
+            next(err);
+        }
     }
 
-    async get(req, res) {
+    async getAll(req, res) {
         const allTypes = await Type.findAll();
 
         return res.json(allTypes);
     }
 
-    async update(req, res) {
-        const type = req.body;
-        await Type.update(type, { where: { id: type.id }});
+    async update(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors.array().map(err => err.msg).join('\n')));
+            }
 
-        return res.json({ message: MessageUpdateSuccess });
+            const type = req.body;
+            const message =  await TypeService.update(type);
+    
+            return res.json(message);
+        } catch(err) {
+            next(err);
+        }
     }
 
-    async delete(req, res) {
-        const { id } = req.query;
-        const typeDeleted = await Type.destroy({ where: { id } });
-
-        return res.json({ message: MessageDeleteSuccess });
+    async delete(req, res, next) {
+        try {
+            const { id } = req.query;
+            const message = await TypeService.delete(id);
+    
+            return res.json(message);
+        } catch (err) {
+            next(err);
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 import jsonWebToken from "jsonwebtoken";
 import dotenv from "dotenv";
+import { listMessagesErrors } from "../helpers/listMessages.js";
 
 dotenv.config();
 
@@ -12,17 +13,17 @@ export default function(role) {
         try {
             const token = req.headers.authorization.split(' ')[1];
             if(!token) {
-                return res.status(401).json({ message: 'Не авторизован' });
+                return res.status(401).json({ message: listMessagesErrors['unauthorized'] });
             }
     
             const decode = jsonWebToken.verify(token, process.env.SECRET_KEY);
             if (decode.role !== role) {
-                return res.status(403).json({ message: 'Нет доступа' });
+                return res.status(403).json({ message: listMessagesErrors['noAccess']});
             }
             req.user = decode;
             next();
         } catch(err) {
-            res.status(401).json({ message: 'Не авторизован' });
+            res.status(401).json({ message: listMessagesErrors['unauthorized'] });
         }
     };
 };

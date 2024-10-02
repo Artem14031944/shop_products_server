@@ -1,14 +1,12 @@
 import { validateNotEmptyField } from "./index.js";
-
-const messageNotName = 'Не указано названия';
-const messageNotId = 'Не указано id';
+import { listMessagesErrors } from "../helpers/listMessages.js";
 
 const validateBrandName = Object.values({
-    name: validateNotEmptyField('name', messageNotName),
+    name: validateNotEmptyField('name', listMessagesErrors['name']),
 });
 
 const validateBrandId = Object.values({
-    id: validateNotEmptyField('id', messageNotId),
+    id: validateNotEmptyField('id', listMessagesErrors['id']),
 });
 
 export {

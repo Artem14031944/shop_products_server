@@ -18,7 +18,7 @@ import router from "./routes/index.js";
 import errorHandler from "./middleware/ErrorHandlingMiddleware.js";
 import fileUpload from "express-fileupload";
 import { resolve } from "path";
-import { __dirname } from "./helper/path.js";
+import { __dirname } from "./helpers/path.js";
 
 dotenv.config();
 const app = express();

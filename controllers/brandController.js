@@ -3,9 +3,6 @@ import { validationResult } from "express-validator";
 import BrandService from "../services/brandService.js";
 import ApiError from "../err/ApiError.js";
 
-
-const messageDeleteSuccess = 'Бренд удален';
-
 class BrandController {
     async create(req, res, next) {
         try {

@@ -1,16 +1,12 @@
 import { Brand } from "../models/models.js";
 import ApiError from "../err/ApiError.js";
-
-const messagaeDublicat = 'Такой бренд уже есть';
-const messsageNotId = 'Нет бренда с таким id';
-const messageUpdateSuccess = 'Бренд изменен';
-const messageDeleteSuccess = 'Бренд удален';
+import { listMessagesSusses, listMessagesErrors } from "../helpers/listMessages.js";
 
 class BrandService {
     async create(brand) {
-        const isHasBrand = await Brand.findOne({ where: { name: brand.name } });
-        if (isHasBrand) {
-            throw ApiError.badRequest(messagaeDublicat);
+        const isBrand = await Brand.findOne({ where: { name: brand.name } });
+        if (isBrand) {
+            throw ApiError.badRequest(listMessagesErrors['dublicat']);
         }
 
         const newBrand = await Brand.create(brand);
@@ -19,35 +15,42 @@ class BrandService {
     }
 
     async update(brand) {
-        const isHasBrand = await Brand.findOne({ where: { id: brand.id } });
-        if (!isHasBrand) {
-            throw ApiError.badRequest(messsageNotId);
+        const isBrand = await this._checkBrandId(brand.id);
+        if (!isBrand) {
+            throw ApiError.badRequest(listMessagesErrors['notFind']);
         }
 
         await Brand.update(brand, { where: { id : brand.id }});
 
-        return { message: messageUpdateSuccess };
+        return { message: listMessagesSusses['change'] };
     }
 
     async getOne(id) {
-        const isHasBrand = await Brand.findOne({ where: { id: brand.id } });
-        if (!isHasBrand) {
-            throw ApiError.badRequest(messsageNotId);
+        const isBrand = await this._checkBrandId(id);
+        if (!isBrand) {
+            throw ApiError.badRequest(listMessagesErrors['notFind']);
         }
+
         const brand = await Brand.findAll({ where: { id } });
 
         return brand;
     }
 
     async delete(id) {
-        const isHasBrand = await Brand.findOne({ where: { id } });
-        if (!isHasBrand) {
-            throw ApiError.badRequest(messsageNotId);
+        const isBrand = await this._checkBrandId(id);
+        if (!isBrand) {
+            throw ApiError.badRequest(listMessagesErrors['notFind']);
         }
 
         await Brand.destroy({ where: { id } });
 
-        return { message: messageDeleteSuccess };
+        return { message: listMessagesSusses['delete'] };
+    }
+
+    async _checkBrandId(id) {
+        const isBrand = await Brand.findOne({ where: { id } });
+        
+        return isBrand;
     }
 }
 

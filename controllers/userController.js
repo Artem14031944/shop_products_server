@@ -1,18 +1,19 @@
 import ApiError from "../err/ApiError.js";
 import { User, Basket } from "../models/models.js";
 import bcrypt from "bcrypt";
-import { generateJWT } from "../helper/generateJWT.js";
+import { generateJWT } from "../helpers/generateJWT.js";
+import { listMessagesErrors } from "../helpers/listMessages.js";
 
 class UserController {
     async registration(req, res, next) {
         const { email, password, role } = req.body;
         if (!email || !password) {
-            return next(ApiError.badRequest('Некорректный email или пароль'));
+            return next(ApiError.badRequest(listMessagesErrors['incorrectEmailOrPasswrod']));
         }
 
         const candidate = await User.findOne({ where: { email } });
         if (candidate) {
-            return next(ApiError.badRequest('Пользователь с таким email уже существует'));
+            return next(ApiError.badRequest(listMessagesErrors['userExists']));
         }
 
         const hasPassword = await bcrypt.hash(password, 8);
@@ -27,12 +28,12 @@ class UserController {
         const { email, password } = req.body;
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            return next(ApiError.internal('Пользователь не найден'));
+            return next(ApiError.internal(listMessagesErrors['notFoundUser']));
         }
 
         let comparePassword = bcrypt.compareSync(password, user.password);
         if (!comparePassword) {
-            return next(ApiError.internal('Указан неверный пароль'));
+            return next(ApiError.internal(listMessagesErrors['incorrectPassword']));
         }
 
         const token = generateJWT(user);
