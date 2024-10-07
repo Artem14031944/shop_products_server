@@ -1,6 +1,4 @@
 import TypeService from "../services/typeService.js";
-import { Type } from "../models/models.js";
-import { listMessagesSusses } from "../helpers/listMessages.js";
 import { validationResult } from "express-validator";
 import ApiError from "../err/ApiError.js";
 
@@ -22,9 +20,9 @@ class TypeController {
     }
 
     async getAll(req, res) {
-        const allTypes = await Type.findAll();
+        const types = await TypeService.getAll();
 
-        return res.json(allTypes);
+        return res.json(types);
     }
 
     async update(req, res, next) {

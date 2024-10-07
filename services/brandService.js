@@ -14,10 +14,16 @@ class BrandService {
         return newBrand;
     }
 
+    async getAll() {
+        const brands = await Brand.findAll();
+
+        return brands;
+    }
+
     async update(brand) {
         const isBrand = await this._checkBrandId(brand.id);
         if (!isBrand) {
-            throw ApiError.badRequest(listMessagesErrors['notFind']);
+            throw ApiError.badRequest(listMessagesErrors['notFoundId']);
         }
 
         await Brand.update(brand, { where: { id : brand.id }});
@@ -28,7 +34,7 @@ class BrandService {
     async getOne(id) {
         const isBrand = await this._checkBrandId(id);
         if (!isBrand) {
-            throw ApiError.badRequest(listMessagesErrors['notFind']);
+            throw ApiError.badRequest(listMessagesErrors['notFoundId']);
         }
 
         const brand = await Brand.findAll({ where: { id } });
@@ -39,7 +45,7 @@ class BrandService {
     async delete(id) {
         const isBrand = await this._checkBrandId(id);
         if (!isBrand) {
-            throw ApiError.badRequest(listMessagesErrors['notFind']);
+            throw ApiError.badRequest(listMessagesErrors['notFoundId']);
         }
 
         await Brand.destroy({ where: { id } });

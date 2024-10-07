@@ -13,17 +13,26 @@ class TypeService {
         return type;
     }
 
+    async getAll() {
+        const types = await Type.findAll();
+
+        return types;
+    }
+
     async update(type) {
         if (!type) {
-            throw ApiError.badRequest(listMessagesErrors['notFind']);
+            throw ApiError.badRequest(listMessagesErrors['notFound']);
         }
 
         const isType = await this._checkTypeId(type.id);
         if (!isType) {
-            throw ApiError.badRequest(listMessagesErrors['notFind']);
+            throw ApiError.badRequest(listMessagesErrors['notFound']);
         }
 
-        await Type.update(type, { where: { id: type.id }});
+        const updatedType = await Type.update(type, { where: { id: type.id }});
+        if (!updatedType) {
+            throw ApiError.internal(listMessagesErrors['serverError']);
+        } 
 
         return { message: listMessagesSusses['change'] };
     }
@@ -31,7 +40,7 @@ class TypeService {
     async delete(id) {
         const isType = await this._checkTypeId(id);
         if (!isType) {
-            throw ApiError.badRequest(listMessagesErrors['notFind']);
+            throw ApiError.badRequest(listMessagesErrors['notFound']);
         }
 
         await Type.destroy({ where: { id } });

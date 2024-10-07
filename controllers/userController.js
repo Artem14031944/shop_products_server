@@ -1,44 +1,38 @@
-import ApiError from "../err/ApiError.js";
-import { User, Basket } from "../models/models.js";
-import bcrypt from "bcrypt";
 import { generateJWT } from "../helpers/generateJWT.js";
-import { listMessagesErrors } from "../helpers/listMessages.js";
+import { validationResult } from "express-validator";
+import UserService from "../services/userService.js"
+import ApiError from "../err/ApiError.js";
 
 class UserController {
     async registration(req, res, next) {
-        const { email, password, role } = req.body;
-        if (!email || !password) {
-            return next(ApiError.badRequest(listMessagesErrors['incorrectEmailOrPasswrod']));
+        try {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors.array().map(err => err.msg).join('\n')));
+            }
+            
+            const { email, password, role } = req.body;
+            const token = await UserService.registration(email, password, role);
+
+            return res.json({ token });
+        } catch (err) {
+            next(err);
         }
-
-        const candidate = await User.findOne({ where: { email } });
-        if (candidate) {
-            return next(ApiError.badRequest(listMessagesErrors['userExists']));
-        }
-
-        const hasPassword = await bcrypt.hash(password, 8);
-        const user = await User.create({ email, password: hasPassword, role });
-        const basket = await Basket.create({ userId: user.id });
-        const token = generateJWT(user);
-
-        return res.json({ token });
     }
     
     async login(req, res, next) {
-        const { email, password } = req.body;
-        const user = await User.findOne({ where: { email } });
-        if (!user) {
-            return next(ApiError.internal(listMessagesErrors['notFoundUser']));
-        }
-
-        let comparePassword = bcrypt.compareSync(password, user.password);
-        if (!comparePassword) {
-            return next(ApiError.internal(listMessagesErrors['incorrectPassword']));
-        }
-
-        const token = generateJWT(user);
-
-        return res.json({ token })
+        try {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors.array().map(err => err.msg).join('\n')));
+            }
+            const { email, password } = req.body;
+            const token = await UserService.login(email, password);
+    
+            return res.json({ token });      
+        } catch(err) {
+            next(err);
+        } 
     }
 
     async check(req, res, next) {
@@ -48,9 +42,39 @@ class UserController {
         return res.json({ token });
     }
 
-    async update(req, res) {}
+    async update(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors.array().map(err => err.msg).join('\n')));
+            }
 
-    async deleteAccount(req, res) {}
+            const user = req.body;
+
+            const message = await UserService.update(user);
+    
+            return res.json(message);
+        } catch(err) {
+            next(err);
+        }
+    }
+
+    async delete(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return next(ApiError.badRequest(errors.array().map(err => err.msg).join('\n')));
+            }
+
+            const { id } = req.query;
+
+            const message = await UserService.delete(id);
+    
+            return res.json(message);
+        } catch(err) {
+            next(err);
+        }
+    }
 }
 
 export default new UserController();

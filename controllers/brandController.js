@@ -1,4 +1,3 @@
-import { Brand } from "../models/models.js";
 import { validationResult } from "express-validator";
 import BrandService from "../services/brandService.js";
 import ApiError from "../err/ApiError.js";
@@ -53,9 +52,9 @@ class BrandController {
     }
 
     async getAll(req, res) {
-        const allBrans = await Brand.findAll();
+        const brands = await BrandService.getAll();
 
-        return res.json(allBrans);
+        return res.json(brands);
     }
 
     async delete(req, res, next) {

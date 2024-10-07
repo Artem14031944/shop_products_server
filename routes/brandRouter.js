@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validateBrandName, validateBrandId } from "../validators/brandValedate.js"
+import { validateBrandName, validateBrandId } from "../validators/brandValidate.js"
 import BrandController from "../controllers/brandController.js";
 
 const router = new Router();

@@ -1,21 +1,26 @@
 const listMessagesSusses = {
     delete: 'Успешно удалено',
     change: 'Успешно изменено'
-}
+};
 
 const listMessagesErrors = {
-    name: 'Не указано названия',
     id: 'Не указано id',
+    name: 'Не указано названия',
+    incorrectEmail: 'Некорректный email',
     unauthorized: 'Не авторизован',
     serverError: 'Ошибка сервера',
     noAccess: 'Нет доступа',
     dublicat: 'Такое уже есть',
-    notFind: 'Не найдено',
-    incorrectEmailOrPasswrod: 'Некорректный email или пароль',
+    notFound: 'Не найдено',
+    notFoundId: 'Нет такого id',
     userExists: 'Пользователь с таким email уже существует',
     notFoundUser: 'Пользователь не найден',
     incorrectPassword: 'Неверный пароль',
-}
+    incorrectEmailOrPasswrod: 'Некорректный email или пароль',
+    lengthPassword: 'Пароль должен составлять не менее 5 символов',
+    requiredPassword: 'Введите пароль',
+    requiredEmail: 'Введите email',
+};
 
 export {
     listMessagesSusses,
